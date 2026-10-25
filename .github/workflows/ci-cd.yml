@@ -10,38 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Stage 1: Checkout source code
     - name: Checkout Source Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    # Stage 2: Compile and package using Maven
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
 
-    # Stage 3: Run automated tests and build JAR
     - name: Build and Test with Maven
       run: mvn clean install
 
-    # Authenticate with your Azure environment
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Log in to Azure Container Registry
       run: az acr login --name vedantdevopsacr
 
-    # Stage 4 & 5: Build, tag, and push the Docker image
     - name: Build and Push Docker Image
       run: |
         docker build -t vedantdevopsacr.azurecr.io/devops-app:${{ github.sha }} .
         docker push vedantdevopsacr.azurecr.io/devops-app:${{ github.sha }}
 
-    # Stage 6: Deploy to the Kubernetes application
     - name: Get AKS Credentials
       run: az aks get-credentials --resource-group devops-cia2-rg --name devops-aks-central --overwrite-existing
 

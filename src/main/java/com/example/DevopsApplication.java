@@ -14,6 +14,6 @@ public class DevopsApplication {
 
     @GetMapping("/")
     public String home() {
-        return "Welcome to Version 1";
+        return "Welcome to Version 2";
     }
 }
