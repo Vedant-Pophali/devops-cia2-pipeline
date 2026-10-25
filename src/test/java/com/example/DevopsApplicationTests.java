@@ -14,6 +14,6 @@ class DevopsApplicationTests {
     @Test
     void contextLoads() {
         String body = this.restTemplate.getForObject("/", String.class);
-        assertThat(body).isEqualTo("Welcome to Version 1");
+        assertThat(body).isEqualTo("Welcome to Version 2");
     }
 }
