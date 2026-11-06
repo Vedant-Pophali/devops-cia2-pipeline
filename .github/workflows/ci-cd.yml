@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
 
 jobs:
   build-and-deploy:
@@ -44,8 +45,16 @@ jobs:
     - name: Get AKS Credentials
       run: az aks get-credentials --resource-group devops-cia2-rg --name devops-aks-central --overwrite-existing
 
-    - name: Deploy to AKS
+    - name: Deploy to AKS (Environment Aware)
       run: |
         sed -i "s|image: vedantdevopsacr.azurecr.io/devops-app:latest|image: vedantdevopsacr.azurecr.io/devops-app:${{ github.sha }}|g" k8s/deployment.yaml
-        kubectl apply -f k8s/deployment.yaml
-        kubectl apply -f k8s/service.yaml
+        
+        if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          echo "Deploying to PRODUCTION environment"
+          kubectl apply -f k8s/deployment.yaml --namespace prod
+          kubectl apply -f k8s/service.yaml --namespace prod
+        else
+          echo "Deploying to DEV environment"
+          kubectl apply -f k8s/deployment.yaml --namespace dev
+          kubectl apply -f k8s/service.yaml --namespace dev
+        fi

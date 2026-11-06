@@ -17,3 +17,10 @@ spec:
         image: vedantdevopsacr.azurecr.io/devops-app:latest
         ports:
         - containerPort: 8080
+        env:
+        - name: APP_ENVIRONMENT
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: environment_name
+              optional: true
